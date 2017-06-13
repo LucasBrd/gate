@@ -131,7 +131,7 @@ server.loader = function(gjs) {
 		pipe.root = gjs;
 		pipe.request = request;
 		pipe.response = response;
-		pipe.server = server;
+		pipe.server = inter;
 		
 		gjs.lib.core.stats.http(pipe);
 		
@@ -166,9 +166,9 @@ server.loader = function(gjs) {
 		pipe.iface = iface;
 		
 		/* lookup website */
-		pipe.site = server.sites.search(request.headers.host);
+		pipe.site = server.sites.search(request.headers.host, inter.gjsKey);
 		if(!pipe.site) {
-			pipe.site = server.sites.search('_');
+			pipe.site = server.sites.search('_', inter.gjsKey);
 			if(!pipe.site) {
 				gjs.lib.http.error.renderArray({
 					pipe: pipe, 
@@ -388,4 +388,3 @@ server.loader = function(gjs) {
 }
 
 module.exports = server;
-

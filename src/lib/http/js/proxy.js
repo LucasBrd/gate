@@ -278,9 +278,10 @@ proxy.prototype.connect = function() {
 
 			pipe.root.lib.core.ipc.send('LFW', 'proxyPassFaulty', {
 				site: pipe.request.headers.host,
+				ifaceName: pipe.server.gjsKey,
 				node: nodePtr,
 				port: options.port,
-				https: flowSelect == https ? true : false
+				https: flowSelect == https ? true : false,
 			});
 
 			nodePtr.isFaulty = true;

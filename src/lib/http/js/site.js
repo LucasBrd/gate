@@ -46,7 +46,10 @@ var site = function(gjs, channel, configuration) {
 
 						var key = gjs.lib.core.utils.cstrrev(obj.name);
 						dst.rules.add(key);
-						dst.sites[key] = obj;
+						if(dst.sites.hasOwnProperty(key))
+							dst.sites[key].push(obj);
+						else
+							dst.sites[key] = [obj];
 
 						/* inject nreg server name rules */
 						if(obj.serverName) {
@@ -55,13 +58,19 @@ var site = function(gjs, channel, configuration) {
 								for(var b in obj.serverName) {
 									var key = gjs.lib.core.utils.cstrrev(obj.serverName[b]);
 									dst.rules.add(key);
-									dst.sites[key] = obj;
+									if(dst.sites.hasOwnProperty(key))
+										dst.sites[key].push(obj);
+									else
+										dst.sites[key] = [obj];
 								}
 							}
 							else if(obj.serverName instanceof String) {
 								var key = gjs.lib.core.utils.cstrrev(obj.serverName);
 								dst.rules.add(key);
-								dst.sites[key] = obj;
+								if(dst.sites.hasOwnProperty(key))
+									dst.sites[key].push(obj);
+								else
+									dst.sites[key] = [obj];
 							}
 							else
 								throw('Invalid argument for serverName in '+obj.confName);
@@ -130,12 +139,21 @@ var site = function(gjs, channel, configuration) {
 		return(true);
 	}
 
-	this.search = function(name) {
+	this.search = function(name, netIface) {
 		if(!name)
 			return(false);
 		var pos = this.rules.match(gjs.lib.core.utils.cstrrev(name));
-		if(pos)
-			return(this.sites[pos]);
+		if(pos) {
+			var list = this.sites[pos];
+			if(!netIface)
+				return(this.sites[pos][0]);
+			else {
+				for(var i = 0 ; i < list.length ; i++) {
+					if(list[i].solvedInterfaces[netIface])
+						return(this.sites[pos][i]);
+				}
+			}
+		}
 		return(false);
 
 	}

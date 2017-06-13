@@ -122,7 +122,7 @@ reverse.loader = function(gjs) {
 
 			/* take the site */
 			var sNode = null;
-			var site = gjs.lib.http.reverse.sites.search(input.msg.site);
+			var site = gjs.lib.http.reverse.sites.search(input.msg.site, input.msg.ifaceName);
 			if(site)
 				if(site.proxyStream[node._name][node._key])
 					if(site.proxyStream[node._name][node._key][node._index])
@@ -222,7 +222,7 @@ reverse.loader = function(gjs) {
 		gjs.lib.core.ipc.on('proxyPassFaulty', function(gjs, data) {
 			var d = data.msg.node;
 
-			var s = gjs.lib.http.reverse.sites.search(data.msg.site);
+			var s = gjs.lib.http.reverse.sites.search(data.msg.site, data.msg.ifaceName);
 			if(!s)
 				return;
 
@@ -237,7 +237,7 @@ reverse.loader = function(gjs) {
 					_timer: setTimeout(
 						backgroundChecker,
 						2000,
-						{hash: hash, msg: data.msg, site: s }
+						{hash: hash, msg: data.msg, site: s, ifaceName: data.msg.ifaceName }
 					)
 				};
 			}
@@ -326,9 +326,9 @@ reverse.loader = function(gjs) {
 		}
 
 		/* lookup website */
-		pipe.site = reverse.sites.search(request.headers.host);
+		pipe.site = reverse.sites.search(request.headers.host, server.gjsKey);
 		if(!pipe.site) {
-			pipe.site = reverse.sites.search('_');
+			pipe.site = reverse.sites.search('_', server.gjsKey);
 			if(!pipe.site) {
 				pipe.response.end();
 				/*
@@ -463,9 +463,9 @@ reverse.loader = function(gjs) {
 		}
 
 		/* lookup website */
-		pipe.site = reverse.sites.search(request.headers.host);
+		pipe.site = reverse.sites.search(request.headers.host, server.gjsKey);
 		if(!pipe.site) {
-			pipe.site = reverse.sites.search('_');
+			pipe.site = reverse.sites.search('_', server.gjsKey);
 			if(!pipe.site) {
 				pipe.response.destroy();
 				return;
@@ -632,7 +632,7 @@ reverse.loader = function(gjs) {
 
 		sc.SNICallback = function(hostname, cb) {
 
-			var site = reverse.sites.search(hostname);
+			var site = reverse.sites.search(hostname, key);
 
 			if(site && site.sslSNI) {
 				/* can not use SNI  */
