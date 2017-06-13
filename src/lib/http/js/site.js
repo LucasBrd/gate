@@ -148,10 +148,14 @@ var site = function(gjs, channel, configuration) {
 			if(!netIface)
 				return(this.sites[pos][0]);
 			else {
+				var wildcardSite = false;
 				for(var i = 0 ; i < list.length ; i++) {
 					if(list[i].solvedInterfaces[netIface])
 						return(this.sites[pos][i]);
+					else if(list[i].solvedInterfaces['*'] && wildcardSite === false)
+						wildcardSite = this.sites[pos][i];
 				}
+				return(wildcardSite);
 			}
 		}
 		return(false);
